@@ -13,7 +13,6 @@ import lombok.Setter;
 
 
 import java.sql.Date;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -39,9 +38,6 @@ public class Employee {
     @Column(unique = true)
     private String email;
 
-//    @ElementCollection
-//    @CollectionTable(name = "employee_phone_numbers", joinColumns = @JoinColumn(name = "employee_id"))
-//    @Column(name = "phone_number")
     @Column(columnDefinition = "json")
     @JsonIgnore
     private String phoneNumbersJson;
@@ -57,7 +53,6 @@ public class Employee {
             try {
                 phoneNumbersJson = objectMapper.writeValueAsString(phoneNumbers);
             } catch (JsonProcessingException e) {
-                // Handle the exception as needed
                 e.printStackTrace();
             }
         }
