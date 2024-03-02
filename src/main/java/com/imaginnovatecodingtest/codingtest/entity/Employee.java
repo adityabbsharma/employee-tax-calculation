@@ -30,7 +30,7 @@ public class Employee {
     private String firstname;
 
     @Column
-    @Pattern(regexp = "^[a-zA-Z]+(?:\\s+[a-zA-Z]+)*$", message = "First name must contain only alphabets and spaces, without trailing spaces")
+    @Pattern(regexp = "^[a-zA-Z]+(?:\\s+[a-zA-Z]+)*$", message = "Last name must contain only alphabets and spaces, without trailing spaces")
     private String lastName;
 
     @Email(regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}",
