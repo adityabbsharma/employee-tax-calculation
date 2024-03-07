@@ -1,5 +1,6 @@
 package com.imaginnovatecodingtest.codingtest.service;
 
+import com.imaginnovatecodingtest.codingtest.dto.EmployeeTaxResponseDTO;
 import com.imaginnovatecodingtest.codingtest.entity.Employee;
 import com.imaginnovatecodingtest.codingtest.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class EmployeeService {
         return employeeRepository.findById(id);
     }
 
-    public double getCurrentYearTax(Employee employee) {
+    public EmployeeTaxResponseDTO getCurrentYearTax(Employee employee) {
         LocalDate currentDate = LocalDate.now();
         LocalDate financialYearStart = LocalDate.of(currentDate.getYear(), Month.APRIL, 1);
         LocalDate financialYearEnd = financialYearStart.plusYears(1).minusDays(1);
@@ -33,11 +34,15 @@ public class EmployeeService {
         double salaryPerMonth = employee.getSalaryPerMonth();
         double annualSalary = salaryPerMonth * 12;
         if (joiningDate.isBefore(financialYearStart)) {
-            return calculateTax(annualSalary);
+            double taxAmount = calculateTax(annualSalary);
+            double cess = annualSalary>2500000 ? (annualSalary-2500000)*.02 : 0.0;
+            return constructEmployeeTaxResponseDTO(employee, annualSalary, taxAmount, cess);
         } else {
             int daysEmployed = (int)ChronoUnit.DAYS.between(joiningDate, financialYearEnd);
             double salaryEarned = (salaryPerMonth * daysEmployed) / 365 * 12;
-            return calculateTax(salaryEarned);
+            double taxAmount =  calculateTax(salaryEarned);
+            double cess = salaryEarned > 2500000 ? (annualSalary - 2500000)*.02 : 0.0;
+            return constructEmployeeTaxResponseDTO(employee, annualSalary, taxAmount, cess);
         }
     }
 
@@ -59,5 +64,16 @@ public class EmployeeService {
             tax += 12500 + 50000 + (annualSalary*0.2);
             return tax;
         }
+    }
+
+    public EmployeeTaxResponseDTO constructEmployeeTaxResponseDTO(Employee employee, double yearlySalary, double tax, double cessAmount) {
+        EmployeeTaxResponseDTO e = new EmployeeTaxResponseDTO();
+        e.setId(employee.getId());
+        e.setTaxAmount(tax);
+        e.setFirstName(employee.getFirstname());
+        e.setLastName(employee.getLastName());
+        e.setYearlySalary(yearlySalary);
+        e.setCessAmount(cessAmount);
+        return e;
     }
 }
